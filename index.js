@@ -1,5 +1,5 @@
 const GameBoard = (function () {
-    let board = Array(3 * 3).fill("");
+    let board = Array(9).fill("");
 
     const setMove = (position, player) => {
         if (board[position] === "") {
@@ -64,6 +64,7 @@ const Game = (function () {
 
     function switchPlayer() {
         currentPlayer = currentPlayer === playerX ? playerO : playerX;
+        DOMManager.getGameStatus().textContent = `Player ${currentPlayer.getSymbol()}'s Turn`;
     }
 
     const makeMove = position => {
@@ -77,9 +78,9 @@ const Game = (function () {
 
             if (winner) {
                 isGameOver = true;
-                console.log(
+                DOMManager.getGameStatus().textContent = `${
                     winner === "Tie" ? "It's a Tie!" : `Player ${winner} wins!`
-                );
+                }`;
             } else {
                 switchPlayer();
             }
@@ -92,7 +93,50 @@ const Game = (function () {
         isGameOver = false;
         GameBoard.resetBoard();
         currentPlayer = playerX;
-    }
+        DOMManager.getGameStatus().textContent = "Player X's Turn";
+    };
 
-    return {makeMove, resetGame}
+    const getGameStatus = () => {
+        return isGameOver;
+    };
+
+    return { makeMove, resetGame, getGameStatus };
+})();
+
+const DOMManager = (function () {
+    const cells = document.querySelectorAll(".cell");
+    const resetButton = document.getElementById("resetButton");
+    const statusText = document.getElementById("gameStatus");
+
+    const renderBoard = () => {
+        const board = GameBoard.getBoard();
+        cells.forEach((cell, index) => {
+            cell.textContent = board[index];
+        });
+    };
+
+    const bindEvents = () => {
+        cells.forEach(cell => {
+            cell.addEventListener("click", () => {
+                if (!Game.getGameStatus()) {
+                    const spot = cell.getAttribute("spot");
+                    Game.makeMove(parseInt(spot));
+                    renderBoard();
+                }
+            });
+        });
+
+        resetButton.addEventListener("click", () => {
+            Game.resetGame();
+            renderBoard();
+        });
+    };
+
+    const getGameStatus = () => {
+        return statusText;
+    };
+
+    bindEvents();
+
+    return { getGameStatus };
 })();
