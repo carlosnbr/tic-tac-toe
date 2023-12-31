@@ -14,7 +14,7 @@ const GameBoard = (function () {
     };
 
     const resetBoard = () => {
-        board = Array(3 * 3).fill("");
+        board = Array(9).fill("");
     };
 
     return { setMove, getBoard, resetBoard };
@@ -69,7 +69,6 @@ const Game = (function () {
 
     const makeMove = position => {
         if (isGameOver) {
-            console.log("Game is over. Please reset the board.");
             return;
         }
 
@@ -84,8 +83,6 @@ const Game = (function () {
             } else {
                 switchPlayer();
             }
-        } else {
-            console.log("Invalid move. Try another position.");
         }
     };
 
